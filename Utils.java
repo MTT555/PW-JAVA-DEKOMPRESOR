@@ -44,14 +44,14 @@ public class Utils {
     int c = inputBufferedReader.read();
     if ((c & 8) == 0) return 2;
     //sprawdzamy sumę kontrolną XOR
-    int xor = inputBufferedReader.read();
+    byte xor = (byte) inputBufferedReader.read();
     while((c=inputBufferedReader.read()) != -1){
-        xor ^= c;
+        xor ^= (byte)c;
     }
-    if(xor == xorCorrectValue)return 0;
+    if((byte)xor == xorCorrectValue)return 0;
     else {
         System.err.println("Provided file cannot be decompressed since it is corrupted!\n");
-        return 3; // plik jest uszkodzony
+       return 3; // plik jest uszkodzony
     }
     }
 

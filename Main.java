@@ -16,6 +16,7 @@ public class Main {
     public static File output; //plik wyjściowy
 
     public static int fileCheck;
+    public static int decompVal;
 
 public static void main(String [] args){
     Decompressor decompress = new Decompressor();
@@ -76,13 +77,17 @@ public static void main(String [] args){
     }
     if(settings.decomp){
         try {
-            inputBufferedReader.mark(0); //ustawiamy kursor w pliku na poczatek
             fileCheck = Utils.fileIsGood(input, (char) 183, true, inputBufferedReader); /* (183 = 0b10110111) */
         }catch(IOException ioe){
             System.out.println("error");
         }
         if(fileCheck == 0){
-            int decompVal = decompress.decompress(input,output,settings);
+            try {
+                decompVal = decompress.decompress(input,output,settings);
+            } catch (IOException ex){
+                System.out.println("error");
+            }
+
             if (decompVal == 1){
                 System.err.println("Decompression memory failure!\n");
                 System.exit(6);
