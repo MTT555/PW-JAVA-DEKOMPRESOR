@@ -1,8 +1,7 @@
 package dekompresor;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.Charset;
 
 public class Utils {
 
@@ -34,8 +33,10 @@ public class Utils {
         System.out.println("7 - Cipher provided during the decompression is not the same as the one given during the compression\n\n");
         System.out.println("------------------------------------------------------------------------------------------------\n\n");
     }
-    public static int fileIsGood(File input, char xorCorrectValue, boolean displayMsg, BufferedReader inputBufferedReader) throws IOException {
-    if(input.length() < 4) return 4; // czy plik jest pusty (długość w bajtach jest mniejsza niż nagłówek)
+    public static int fileIsGood(File input, char xorCorrectValue, boolean displayMsg) throws IOException {
+        FileReader fileReader = new FileReader(input, Charset.forName("ISO-8859-1"));
+        BufferedReader inputBufferedReader = new BufferedReader(fileReader);
+        if(input.length() < 4) return 4; // czy plik jest pusty (długość w bajtach jest mniejsza niż nagłówek)
     //Sprawdzamy czy nagłówek jest prawidłowy
     //dwa pierwsze bajty to powinno być CT
     if (inputBufferedReader.read() != 'C')return 1;
@@ -44,11 +45,11 @@ public class Utils {
     int c = inputBufferedReader.read();
     if ((c & 8) == 0) return 2;
     //sprawdzamy sumę kontrolną XOR
-    byte xor = (byte) inputBufferedReader.read();
-    while((c=inputBufferedReader.read()) != -1){
-        xor ^= (byte)c;
+    int xor = inputBufferedReader.read();
+    while((c=(byte)inputBufferedReader.read()) != -1){
+        xor ^= c;
     }
-    if((byte)xor == xorCorrectValue)return 0;
+    if(xor == xorCorrectValue)return 0;
     else {
         System.err.println("Provided file cannot be decompressed since it is corrupted!\n");
        return 3; // plik jest uszkodzony
