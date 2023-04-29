@@ -2,9 +2,14 @@ package dekompresor;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.HashMap;
 
 public class Utils {
 
+    public static void addToListCodes(HashMap<String,Integer>listCodes,int character, String code){
+        listCodes.put(code,character);
+    }
     public static void showHelpMessage() {
         System.out.println("\n---------------------------------- HUFFMAN DECOMPRESSOR HELPBOX ----------------------------------\n\n");
         System.out.println("Decompressor made by Adrian Chmiel & Mateusz Tyl\n\n");

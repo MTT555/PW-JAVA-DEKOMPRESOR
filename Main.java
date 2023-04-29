@@ -69,7 +69,7 @@ public static void main(String [] args){
     }
     if(!settings.decomp) { /* jezeli nie wymuszono zachowania programu, sprawdzamy plik */
         try {
-            if (Utils.fileIsGood(input, (char)183, false, inputBufferedReader) == 0) /* (183 = 0b10110111) */
+            if (Utils.fileIsGood(input, (char)183, false) == 0) /* (183 = 0b10110111) */
                 settings.decomp = true;
         } catch (IOException ioe){
             System.out.println("error");
@@ -77,7 +77,7 @@ public static void main(String [] args){
     }
     if(settings.decomp){
         try {
-            fileCheck = Utils.fileIsGood(input, (char) 183, true, inputBufferedReader); /* (183 = 0b10110111) */
+            fileCheck = Utils.fileIsGood(input, (char) 183, true); /* (183 = 0b10110111) */
         }catch(IOException ioe){
             System.out.println("error");
         }

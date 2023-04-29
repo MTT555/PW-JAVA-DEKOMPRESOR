@@ -1,15 +1,31 @@
 package dekompresor;
 
 public class dNode {
-    private Node root;
-    public class Node{
-        private Node left;
-        private Node right;
-        private Node next;
-        public Node(){
-            this.left = null;
-            this.right = null;
-            this.next = null;
+
+        public dNode left;//lewy węzeł
+        public dNode right;//prawy węzeł
+        public dNode prev;//ojciec
+        public dNode(){
+            this.left = null;//lewy węzeł
+            this.right = null;//prawy węzeł
+            this.prev = null; //ojciec
+
+    }
+    public static int goDown(dNode iterator){
+        if(iterator.left == null) { /* jezeli lewy wezel jest wolny */
+            iterator.left = new dNode();
+            iterator.left.prev = iterator; /* zapisanie poprzedniego wezla */
+            iterator.left.left = null;
+            iterator.left.right = null;
+            iterator = iterator.left;
+            return 0;
+        } else { /* w przeciwnym razie zajmujemy prawy wezel */
+            iterator.right = new dNode();
+            iterator.right.prev = iterator; /* zapisanie poprzedniego wezla */
+            iterator.right.left = null;
+            iterator.right.right = null;
+            iterator = iterator.right;
+            return 1;
         }
     }
 

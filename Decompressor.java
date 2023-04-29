@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 
 public class Decompressor {
 int i;
@@ -11,15 +12,15 @@ char c;
 String cipherKey;
 int cipherPos = 0;
 int cipherLength;
-mod_t mode = new mod_t();//obiekt zawierający enuma do ustalania trybu odczytywania z pliku
+mod_t mode;//obiekt zawierający enuma do ustalania trybu odczytywania z pliku
 int currentBits = 0;
 int tempCode = 0;
 flag_t defFlag = new flag_t();
 flag_t allFlag = new flag_t();
     buffer_t buf = new buffer_t(), codeBuf = new buffer_t(); /* przechowywanie buforu */
     int anBitsVal; /* zmienna na przechowywanie tymczasowego rezultatu funkcji analyzeBits */
-    int inputEOF; /* zmienne zawierajace pozycje koncowe pliku wejsciowego i wyjsciowego */
     dNode tree;
+    HashMap<String,Integer>listCodes = new HashMap<String, Integer>(); // tu przechowujemy znaki i odpowiadający mu kod Huffmana
 
     public int decompress(File input, File output, Settings settings) throws IOException {
         cipherKey = settings.cipherKey;
@@ -51,14 +52,14 @@ flag_t allFlag = new flag_t();
         }
         int actualIndex = 4;
         /*Analiza pliku*/
-        read.skip(1);
+        read.skip(1); //skipujemy sumę kontrolną
         while((c=read.read())!=-1){
             if(allFlag.cipher){
                 c -= cipherKey.charAt(cipherPos % cipherLength); /* odszyfrowanie */
                 cipherPos++;
             }
             if(actualIndex != input.length()-1){/* analizowanie kazdego bitu przy pomocy funkcji */
-                anBitsVal = BitsAnalyze.analyzeBits();
+                anBitsVal = BitsAnalyze.analyzeBits(output,c,defFlag,tree,mode,buf,codeBuf,currentBits, tempCode, listCodes);
                 if(anBitsVal == 1)return 1;
                 if(anBitsVal == 2){
                     System.err.println("Decompression failure due to the incorrect cipher!\nCipher provided during the decompression has to be the exact same as the one provided during the compression to receive an accurate output!\n");
@@ -66,7 +67,7 @@ flag_t allFlag = new flag_t();
                 }
             }
         }
-        anBitsVal = BitsAnalyze.analyzeBits();
+        anBitsVal = BitsAnalyze.analyzeBits(output,c,allFlag,tree,mode,buf,codeBuf,currentBits, tempCode, listCodes);
         if(anBitsVal == 1)return 1;
         if(anBitsVal == 2){
             System.err.println("Decompression failure due to the incorrect cipher!\nCipher provided during the decompression has to be the exact same as the one provided during the compression to receive an accurate output!\n");
