@@ -4,15 +4,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class Decompressor {
-int i;
-char c;
 String cipherKey;
 int cipherPos = 0;
 int cipherLength;
-mod_t mode;//obiekt zawierający enuma do ustalania trybu odczytywania z pliku
 int currentBits = 0;
 int tempCode = 0;
 flag_t defFlag = new flag_t();
@@ -21,8 +19,12 @@ flag_t allFlag = new flag_t();
     int anBitsVal; /* zmienna na przechowywanie tymczasowego rezultatu funkcji analyzeBits */
     dNode tree;
     HashMap<String,Integer>listCodes = new HashMap<String, Integer>(); // tu przechowujemy znaki i odpowiadający mu kod Huffmana
-
+    mod_t mode = new mod_t(1);
     public int decompress(File input, File output, Settings settings) throws IOException {
+        buf.buf = new char[16];
+        codeBuf.buf = new char[16];
+        Arrays.fill(codeBuf.buf,'x');
+        Arrays.fill(buf.buf,'x');
         cipherKey = settings.cipherKey;
         cipherLength = cipherKey.length();
         buf.curSize = 8192; /* aktualna wielkosc buforu na odczytane bity */

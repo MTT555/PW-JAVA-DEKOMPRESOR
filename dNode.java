@@ -11,21 +11,21 @@ public class dNode {
             this.prev = null; //ojciec
 
     }
-    public static int goDown(dNode iterator){
+    public static dNode goDown(dNode iterator){
         if(iterator.left == null) { /* jezeli lewy wezel jest wolny */
             iterator.left = new dNode();
             iterator.left.prev = iterator; /* zapisanie poprzedniego wezla */
             iterator.left.left = null;
             iterator.left.right = null;
-            iterator = iterator.left;
-            return 0;
+            BitsAnalyze.down = 0;
+            return iterator.left;
         } else { /* w przeciwnym razie zajmujemy prawy wezel */
             iterator.right = new dNode();
             iterator.right.prev = iterator; /* zapisanie poprzedniego wezla */
             iterator.right.left = null;
             iterator.right.right = null;
-            iterator = iterator.right;
-            return 1;
+            BitsAnalyze.down = 1;
+            return iterator.right;
         }
     }
 

@@ -5,11 +5,21 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 public class BitsAnalyze {
+    public static String removeX(String string){
+        for (int i = 0; i < string.length(); i++){
+            if (string.charAt(i) == 'x'){
+                return string.substring(0,i);
+            }
+        }
+        return string;
+    }
     public static FileWriter fileWriter;
+    public static int down = 0;
     public static int returnBit(int c, int x){
         int ch = c;
         ch >>= (7 - x);
@@ -92,89 +102,67 @@ public class BitsAnalyze {
         return false;
     }
     public static int analyzeBits(File output, int c, flag_t f, dNode tree, mod_t mode, buffer_t buf, buffer_t codeBuf, int currentBits, int tempCode, HashMap<String, Integer> listCodes){
-        int i, down;
+        int i;
         int bits = 0; /* ilosc przeanalizowanych bitow */
         int currentCode; /* obecny kod przejscia w sciezce */
-        StringBuilder builder = new StringBuilder();
-        StringBuilder builder1 = new StringBuilder();
-        mode = mode.dictRoad;
 
-        dNode iterator = tree;
 
         while (bits != 8 - f.redundantBits) { /* f.redundantBits bedzie != 0 jedynie przy ostatnim analizowanym znaku */
             if(buf.pos > 100000 || codeBuf.pos > 100000) /* zapobieganie przepelnianiu pamieci w momencie podania zlego szyfru do odszyfrowania */
                 return 2;
-            switch(mode) {
-                case dictRoad: {
+            switch(mode.value) {
+                case 1: {
                     currentCode = 2 * returnBit(c, bits) + returnBit(c, bits + 1);
                     bits += 2;
                     if(currentCode == 3) {
                         buf.pos = 0;
-                    mode = mode.bitsToWords;
+                    mode.value = 3;
                     } else if(currentCode == 2) {
-                    iterator = iterator.prev;
+                    tree = tree.prev;
                         (codeBuf.pos)--; /* wyjscie o jeden w gore */
                     } else if(currentCode == 1) {
-                        down = dNode.goDown(iterator);
-                        if(down == -1)
-                            return 1;
+                        tree = dNode.goDown(tree);
+                       if(down == -1)
+                          return 1;
 
                         //przejście o jeden w dół
                         //ten kod poniżej to umieszczanie w stringu podanego znaku na podanej pozycji
-                        builder.append(codeBuf.buf);
-                        builder.insert(codeBuf.pos,'0' + down);
-                        codeBuf.buf = builder.toString();
-                        builder.append(codeBuf.buf);
+                        codeBuf.buf[codeBuf.pos] = (char)('0' + down);
                         codeBuf.pos++;
-
-                        builder.insert(codeBuf.pos,'\0');
-                        codeBuf.buf = builder.toString();
-                        builder.append(codeBuf.buf);
-                    mode = mode.dictWord;
+                        codeBuf.buf[codeBuf.pos] = (char)('\0');
+                    mode.value = 2;
                     } else if(currentCode == 0) {
-                        down = dNode.goDown(iterator);
+                        tree = dNode.goDown(tree);
                         if(down == -1)
                             return 1;
-                        builder.insert(codeBuf.pos,'0' + down);
-                        codeBuf.buf = builder.toString();
-                        builder.append(codeBuf.buf);
+                        codeBuf.buf[codeBuf.pos] = (char)('0' + down);
                         codeBuf.pos++;
                     }
                     break;
                 }
-                case dictWord: {
-                    builder1.insert((buf.pos)++,returnBit(c, bits++));
-                    buf.buf = builder1.toString();
-                    builder1.append(buf.buf);
-
-                    builder1.insert((buf.pos)++,returnBit(c, bits++));
-                    buf.buf = builder1.toString();
-                    builder1.append(buf.buf);
+                case 2: {
+                    buf.buf[(buf.pos)++] = (char)(returnBit(c, bits++)+'0');
+                    buf.buf[(buf.pos)++] = (char)(returnBit(c, bits++)+'0');
 
                     if(buf.pos == f.compLevel) {
                         int result = 0;
                         for(i = 0; i < f.compLevel; i++) {
                             result *= 2;
-                            result += buf.buf.charAt(i);
+                            result += (buf.buf[i]-'0');
                         }
-                        Utils.addToListCodes(listCodes, result, codeBuf.buf);
+                        Utils.addToListCodes(listCodes, result, removeX(String.valueOf(codeBuf.buf)));
                         buf.pos = 0;
-                    iterator = iterator.prev;
+                    tree = tree.prev;
                         (codeBuf.pos)--;
-                    mode = mode.dictRoad;
+                    mode.value = 1;
                     }
                     break;
                 }
-                case bitsToWords: {
-                    builder1.insert((buf.pos)++,'0' + returnBit(c, bits));
-                    buf.buf = builder1.toString();
-                    builder1.append(buf.buf);
-
-                    builder1.insert(buf.pos,'\0');
-                    buf.buf = builder1.toString();
-                    builder1.append(buf.buf);
+                case 3: {
+                    buf.buf[(buf.pos)++] = (char)(returnBit(c, bits)+'0');
+                    buf.buf[buf.pos] = (char)('\0');
                     bits++;
-                    if(compareBuffer(listCodes, buf.buf, output, f.compLevel, ((((bits == 8 ? 1:0) - f.redundantBits)==1?true:false) ? f.redundantZero : false), currentBits, tempCode))
+                    if(compareBuffer(listCodes, buf.buf.toString(), output, f.compLevel, ((((bits == 8 ? 1:0) - f.redundantBits)==1?true:false) ? f.redundantZero : false), currentBits, tempCode))
                         buf.pos = 0;
                     break;
                 }
