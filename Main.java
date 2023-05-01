@@ -10,18 +10,19 @@ Mateusz Tyl
  */
 public class Main {
     public static File input; //plik wejściowy
+    //poniżej dwie zmienne odpowiedzialne za wczytanie danych z pliku bajt po bajcie
     public static FileReader inputReader;
     public static BufferedReader inputBufferedReader;
 
     public static File output; //plik wyjściowy
 
-    public static int fileCheck;
-    public static int decompVal;
+    public static int fileCheck; //wartość zwracana po sprawdzeniu poprawności pliku
+    public static int decompVal; //wartość zwracana po dekompresji
 
 public static void main(String [] args){
     Decompressor decompress = new Decompressor();
-//Analiza argumentów podanych przy wywołaniu programu
-//jeżeli nie podano żadnego argumentu lub podano tylko argument -h program wyświetli pomoc
+    //Analiza argumentów podanych przy wywołaniu programu
+    //jeżeli nie podano żadnego argumentu lub podano tylko argument -h program wyświetli pomoc
     if(args.length == 0 || args[1].equals("-h"))Utils.showHelpMessage();
 
     //Sprawdzamy czy podano zarówno plik wejściowy jak i wyjściowy
@@ -54,7 +55,7 @@ public static void main(String [] args){
     }
     //czy plik nie jest pusty
     if(input.length()==0){
-        System.err.println(" Input file is empty!\n" + args[1]);
+        System.err.println("Input file is empty!\n" + args[1]);
         System.exit(4);
     }
 
@@ -72,27 +73,24 @@ public static void main(String [] args){
             if (Utils.fileIsGood(input, (char)183, false) == 0) /* (183 = 0b10110111) */
                 settings.decomp = true;
         } catch (IOException ioe){
-            System.out.println("error");
+            System.out.println("Input file error!\n"+args[0]);
+            System.exit(2);
         }
     }
     if(settings.decomp){
         try {
             fileCheck = Utils.fileIsGood(input, (char) 183, true); /* (183 = 0b10110111) */
         }catch(IOException ioe){
-            System.out.println("error");
+            System.out.println("Input file error!\n");
+            System.exit(2);
         }
         if(fileCheck == 0){
-            try {
                 decompVal = decompress.decompress(input,output,settings);
-            } catch (IOException ex){
-                System.out.println("error");
-            }
-
             if (decompVal == 1){
                 System.err.println("Decompression memory failure!\n");
                 System.exit(6);
             } else if (decompVal == 2){
-                System.err.println("Decompression encryption failure!\\n");
+                System.err.println("Decompression encryption failure!\n");
                 System.exit(7);
             } else {
                 System.exit(5);

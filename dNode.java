@@ -17,14 +17,14 @@ public class dNode {
             iterator.left.prev = iterator; /* zapisanie poprzedniego wezla */
             iterator.left.left = null;
             iterator.left.right = null;
-            BitsAnalyze.down = 0;
+            BitsAnalyze.down = 0; //ustawiamy wartość na gałęzi drzewa
             return iterator.left;
         } else { /* w przeciwnym razie zajmujemy prawy wezel */
             iterator.right = new dNode();
             iterator.right.prev = iterator; /* zapisanie poprzedniego wezla */
             iterator.right.left = null;
             iterator.right.right = null;
-            BitsAnalyze.down = 1;
+            BitsAnalyze.down = 1; //ustawiamy wartość na gałęzi drzewa
             return iterator.right;
         }
     }

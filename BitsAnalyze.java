@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BitsAnalyze {
+    //ucinamy stringa tam gdzie napotkamy na znak '\0'
     public static String cutString(String string){
         for (int i = 0; i < string.length(); i++){
             if (string.charAt(i) == '\0'){
@@ -18,7 +19,9 @@ public class BitsAnalyze {
         return string;
     }
     public static FileWriter fileWriter;
-    public static int down = 0;
+    public static int down = 0; //wartość znajdująca się na gałęzi drzewa
+    //przejście w lewo reprezentuje 0, w prawo 1
+    //zwracamy x-ty bit zmiennej c
     public static int returnBit(int c, int x){
         int ch = c;
         ch >>= (7 - x);
@@ -28,7 +31,8 @@ public class BitsAnalyze {
         try {
             fileWriter = new FileWriter(output, Charset.forName("ISO-8859-1"),true);
         }catch (IOException e){
-            System.err.println("error");
+            System.err.println("Output file error!\n");
+            System.exit(3);
         }
         BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
         int temp, tempC;
@@ -40,7 +44,8 @@ public class BitsAnalyze {
                     try {
                         bufferedWriter.write((char)tempC);
                     }catch (IOException e){
-                        System.err.println("error");
+                        System.err.println("Output file error!\n");
+                        System.exit(3);
                     }
                 }
                 else if(compLevel == 16) { /* dla kompresji 16-bit */
@@ -48,14 +53,16 @@ public class BitsAnalyze {
                     try {/* piszemy 2 symbole */
                         bufferedWriter.write(tempC);
                     }catch (IOException e){
-                        System.err.println("error");
+                        System.err.println("Output file error!\n");
+                        System.exit(3);
                     }
                     if(!redundantZero) { /* chyba ze oznaczenie o nadmiarowym znaku '\0' ustawione na true */
                         tempC = set.getValue();
                         try {
                             bufferedWriter.write(tempC);
                         }catch (IOException e){
-                            System.err.println("error");
+                            System.err.println("Output file error!\n");
+                            System.exit(3);
                         }
                     }
                 }
@@ -70,7 +77,8 @@ public class BitsAnalyze {
                         try {
                             bufferedWriter.write(tempC);
                         }catch (IOException e){
-                            System.err.println("error");
+                            System.err.println("Output file error!\n");
+                            System.exit(3);
                         }
                     tempCode = temp; /* i przywracamy 4 odciete bity do tempCode */
                     currentBits = 4;
@@ -79,14 +87,16 @@ public class BitsAnalyze {
                         try {
                             bufferedWriter.write(tempC);
                         }catch (IOException e){
-                            System.err.println("error");
+                            System.err.println("Output file error!\n");
+                            System.exit(3);
                         }
                         if(!redundantZero) {
                             tempC = tempCode;
                             try {
                                 bufferedWriter.write(tempC);
                             }catch (IOException e){
-                                System.err.println("error");
+                                System.err.println("Output file error!\n");
+                                System.exit(3);
                             }
                         }
                     tempCode = 0;
@@ -96,7 +106,8 @@ public class BitsAnalyze {
                 try {
                     bufferedWriter.close();
                 } catch (IOException e){
-                    System.err.println("error");
+                    System.err.println("Output file error!\n");
+                    System.exit(3);
                 }
                 return true;
             }
@@ -105,7 +116,8 @@ public class BitsAnalyze {
         try {
             bufferedWriter.close();
         } catch (IOException e){
-            System.err.println("error");
+            System.err.println("Output file error!\n");
+            System.exit(3);
         }
         return false;
     }

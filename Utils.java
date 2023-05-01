@@ -2,11 +2,10 @@ package dekompresor;
 
 import java.io.*;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.HashMap;
 
 public class Utils {
-
+    //dodawanie kodu wraz ze znakiem do hashmapy
     public static void addToListCodes(HashMap<String,Integer>listCodes,int character, String code){
         listCodes.put(code,character);
     }
@@ -38,6 +37,7 @@ public class Utils {
         System.out.println("7 - Cipher provided during the decompression is not the same as the one given during the compression\n\n");
         System.out.println("------------------------------------------------------------------------------------------------\n\n");
     }
+    //sprawdzamy czy plik skompresowany jest poprawny
     public static int fileIsGood(File input, char xorCorrectValue, boolean displayMsg) throws IOException {
         FileReader fileReader = new FileReader(input, Charset.forName("ISO-8859-1"));
         BufferedReader inputBufferedReader = new BufferedReader(fileReader);

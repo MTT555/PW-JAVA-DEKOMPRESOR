@@ -12,13 +12,14 @@ public class Decrypt {
         try {
             decryptReader = new FileReader(input);
         }catch(FileNotFoundException e){
-            System.err.println("File not found");
+            System.err.println("Input file not found!\n");
         }
         BufferedReader bufReader = new BufferedReader(decryptReader);
         try {
             bufReader.skip(4);
         } catch (IOException e){
-            System.err.println("Error");
+            System.err.println("Error! The input file was not loaded correctly!");
+            System.exit(2);
         }
         try {
             while ((c = bufReader.read()) != -1) {
@@ -26,7 +27,8 @@ public class Decrypt {
                 cipherPos++;
             }
         }catch (IOException e){
-            System.err.println("Error");
+            System.err.println("Error! The input file was not loaded correctly!");
+            System.exit(2);
         }
         System.err.println("File successfully decrypted!\n");
     }
