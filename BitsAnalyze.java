@@ -5,14 +5,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 public class BitsAnalyze {
-    public static String removeX(String string){
+    public static String cutString(String string){
         for (int i = 0; i < string.length(); i++){
-            if (string.charAt(i) == 'x'){
+            if (string.charAt(i) == '\0'){
                 return string.substring(0,i);
             }
         }
@@ -27,7 +26,7 @@ public class BitsAnalyze {
     }
     public static boolean compareBuffer(HashMap<String, Integer> listCodes, String buf, File output, int compLevel, boolean redundantZero, int currentBits, int tempCode) {
         try {
-            fileWriter = new FileWriter(output, Charset.forName("ISO-8859-1"));
+            fileWriter = new FileWriter(output, Charset.forName("ISO-8859-1"),true);
         }catch (IOException e){
             System.err.println("error");
         }
@@ -37,9 +36,9 @@ public class BitsAnalyze {
 
             if(set.getKey().equals(buf)){
                 if(compLevel == 8){
-                    tempC = set.getValue()/(1<<8);
+                    tempC = set.getValue();
                     try {
-                        bufferedWriter.write(tempC);
+                        bufferedWriter.write((char)tempC);
                     }catch (IOException e){
                         System.err.println("error");
                     }
@@ -94,14 +93,23 @@ public class BitsAnalyze {
                     currentBits = 0;
                     }
                 }
+                try {
+                    bufferedWriter.close();
+                } catch (IOException e){
+                    System.err.println("error");
+                }
                 return true;
             }
         }
 
-
+        try {
+            bufferedWriter.close();
+        } catch (IOException e){
+            System.err.println("error");
+        }
         return false;
     }
-    public static int analyzeBits(File output, int c, flag_t f, dNode tree, mod_t mode, buffer_t buf, buffer_t codeBuf, int currentBits, int tempCode, HashMap<String, Integer> listCodes){
+    public static int analyzeBits(File output, int c, flag_t f, mod_t mode, buffer_t buf, buffer_t codeBuf, int currentBits, int tempCode, HashMap<String, Integer> listCodes){
         int i;
         int bits = 0; /* ilosc przeanalizowanych bitow */
         int currentCode; /* obecny kod przejscia w sciezce */
@@ -118,10 +126,10 @@ public class BitsAnalyze {
                         buf.pos = 0;
                     mode.value = 3;
                     } else if(currentCode == 2) {
-                    tree = tree.prev;
+                    Decompressor.tree =  Decompressor.tree.prev;
                         (codeBuf.pos)--; /* wyjscie o jeden w gore */
                     } else if(currentCode == 1) {
-                        tree = dNode.goDown(tree);
+                        Decompressor.tree = dNode.goDown(Decompressor.tree);
                        if(down == -1)
                           return 1;
 
@@ -132,7 +140,7 @@ public class BitsAnalyze {
                         codeBuf.buf[codeBuf.pos] = (char)('\0');
                     mode.value = 2;
                     } else if(currentCode == 0) {
-                        tree = dNode.goDown(tree);
+                        Decompressor.tree = dNode.goDown(Decompressor.tree);
                         if(down == -1)
                             return 1;
                         codeBuf.buf[codeBuf.pos] = (char)('0' + down);
@@ -150,9 +158,9 @@ public class BitsAnalyze {
                             result *= 2;
                             result += (buf.buf[i]-'0');
                         }
-                        Utils.addToListCodes(listCodes, result, removeX(String.valueOf(codeBuf.buf)));
+                        Utils.addToListCodes(listCodes, result, cutString(String.valueOf(codeBuf.buf)));
                         buf.pos = 0;
-                    tree = tree.prev;
+                        Decompressor.tree =  Decompressor.tree.prev;
                         (codeBuf.pos)--;
                     mode.value = 1;
                     }
@@ -162,7 +170,7 @@ public class BitsAnalyze {
                     buf.buf[(buf.pos)++] = (char)(returnBit(c, bits)+'0');
                     buf.buf[buf.pos] = (char)('\0');
                     bits++;
-                    if(compareBuffer(listCodes, buf.buf.toString(), output, f.compLevel, ((((bits == 8 ? 1:0) - f.redundantBits)==1?true:false) ? f.redundantZero : false), currentBits, tempCode))
+                    if(compareBuffer(listCodes, cutString(String.valueOf(buf.buf)), output, f.compLevel, ((((bits == 8 ? 1:0) - f.redundantBits)==1?true:false) ? f.redundantZero : false), currentBits, tempCode))
                         buf.pos = 0;
                     break;
                 }

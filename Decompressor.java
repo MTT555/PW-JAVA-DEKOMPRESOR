@@ -1,9 +1,7 @@
 package dekompresor;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -17,7 +15,7 @@ flag_t defFlag = new flag_t();
 flag_t allFlag = new flag_t();
     buffer_t buf = new buffer_t(), codeBuf = new buffer_t(); /* przechowywanie buforu */
     int anBitsVal; /* zmienna na przechowywanie tymczasowego rezultatu funkcji analyzeBits */
-    dNode tree;
+    public static dNode tree = new dNode();
     HashMap<String,Integer>listCodes = new HashMap<String, Integer>(); // tu przechowujemy znaki i odpowiadający mu kod Huffmana
     mod_t mode = new mod_t(1);
     public int decompress(File input, File output, Settings settings) throws IOException {
@@ -31,10 +29,10 @@ flag_t allFlag = new flag_t();
         buf.pos = 0; /* aktualna pozycja w buforze na odczytane bity */
         codeBuf.curSize = 8192; /* aktualna wielkosc buforu dla kodow przejsc po drzewie */
         codeBuf.pos = 0; /* aktualna pozycja w buforze dla kodow */
-        tree = new dNode(); // inicjujemy drzewo do pozyskania kodów ze słownika
+        //tree = new dNode(); // inicjujemy drzewo do pozyskania kodów ze słownika
 
         //odczytuję flagi - ustawiamy kursor na trzeci znak zawierający flagi
-        FileReader inputReader = new FileReader(input);
+        FileReader inputReader = new FileReader(input, Charset.forName("ISO-8859-1"));
         BufferedReader read = new BufferedReader(inputReader);
         read.skip(2);
         int c = read.read();
@@ -56,28 +54,28 @@ flag_t allFlag = new flag_t();
         /*Analiza pliku*/
         read.skip(1); //skipujemy sumę kontrolną
         while((c=read.read())!=-1){
+            if(actualIndex == input.length()-1)break;
             if(allFlag.cipher){
                 c -= cipherKey.charAt(cipherPos % cipherLength); /* odszyfrowanie */
                 cipherPos++;
             }
-            if(actualIndex != input.length()-1){/* analizowanie kazdego bitu przy pomocy funkcji */
-                anBitsVal = BitsAnalyze.analyzeBits(output,c,defFlag,tree,mode,buf,codeBuf,currentBits, tempCode, listCodes);
+           /* analizowanie kazdego bitu przy pomocy funkcji */
+                anBitsVal = BitsAnalyze.analyzeBits(output,c,defFlag,mode,buf,codeBuf,currentBits, tempCode, listCodes);
                 if(anBitsVal == 1)return 1;
                 if(anBitsVal == 2){
                     System.err.println("Decompression failure due to the incorrect cipher!\nCipher provided during the decompression has to be the exact same as the one provided during the compression to receive an accurate output!\n");
                     return 2;
                 }
-            }
+
+            actualIndex++;
         }
-        anBitsVal = BitsAnalyze.analyzeBits(output,c,allFlag,tree,mode,buf,codeBuf,currentBits, tempCode, listCodes);
+        anBitsVal = BitsAnalyze.analyzeBits(output,c,allFlag,mode,buf,codeBuf,currentBits, tempCode, listCodes);
         if(anBitsVal == 1)return 1;
         if(anBitsVal == 2){
             System.err.println("Decompression failure due to the incorrect cipher!\nCipher provided during the decompression has to be the exact same as the one provided during the compression to receive an accurate output!\n");
             return 2;
         }
         System.err.println("File successfully decompressed!\n");
-
-
 
         return 0;
     }
