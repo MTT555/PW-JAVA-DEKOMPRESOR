@@ -51,8 +51,11 @@ public class Utils {
     if ((c & 8) == 0) return 2;
     //sprawdzamy sumę kontrolną XOR
     int xor = inputBufferedReader.read();
-    while((c=(byte)inputBufferedReader.read()) != -1){
+    int actual_index = 4;
+    while(actual_index != input.length()){
+        c=inputBufferedReader.read();
         xor ^= c;
+        actual_index++;
     }
     if(xor == xorCorrectValue)return 0;
     else {

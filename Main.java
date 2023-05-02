@@ -43,16 +43,11 @@ public static void main(String [] args){
     inputBufferedReader = new BufferedReader(inputReader);
 
     //czy plik wejściowy da się odczytać/czy istnieje
-    if (!input.canRead() || !input.exists()){
+    if (!input.canRead() && !input.exists()){
         System.err.println("Input file could not be opened!\n" + args[0]);
         System.exit(2);
     }
 
-    //czy da się pisać do pliku wyjściowego
-    if (!output.canRead() || !output.exists()){
-        System.err.println("Output file could not be opened!\n" + args[1]);
-        System.exit(3);
-    }
     //czy plik nie jest pusty
     if(input.length()==0){
         System.err.println("Input file is empty!\n" + args[1]);

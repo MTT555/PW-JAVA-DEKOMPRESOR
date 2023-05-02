@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BitsAnalyze {
+    public static int currentBits = 0;
+    public static int tempCode = 0;
+    public static byte cast;//zmienna pomocnicza do rzutowania na typ byte
     //ucinamy stringa tam gdzie napotkamy na znak '\0'
     public static String cutString(String string){
         for (int i = 0; i < string.length(); i++){
@@ -21,13 +24,14 @@ public class BitsAnalyze {
     public static FileWriter fileWriter;
     public static int down = 0; //wartość znajdująca się na gałęzi drzewa
     //przejście w lewo reprezentuje 0, w prawo 1
+
     //zwracamy x-ty bit zmiennej c
     public static int returnBit(int c, int x){
         int ch = c;
         ch >>= (7 - x);
         return ch % 2;
     }
-    public static boolean compareBuffer(HashMap<String, Integer> listCodes, String buf, File output, int compLevel, boolean redundantZero, int currentBits, int tempCode) {
+    public static boolean compareBuffer(HashMap<String, Integer> listCodes, String buf, File output, int compLevel, boolean redundantZero) {
         try {
             fileWriter = new FileWriter(output, Charset.forName("ISO-8859-1"),true);
         }catch (IOException e){
@@ -42,7 +46,7 @@ public class BitsAnalyze {
                 if(compLevel == 8){
                     tempC = set.getValue();
                     try {
-                        bufferedWriter.write((char)tempC);
+                        bufferedWriter.write(tempC);
                     }catch (IOException e){
                         System.err.println("Output file error!\n");
                         System.exit(3);
@@ -58,6 +62,8 @@ public class BitsAnalyze {
                     }
                     if(!redundantZero) { /* chyba ze oznaczenie o nadmiarowym znaku '\0' ustawione na true */
                         tempC = set.getValue();
+                        byte cast = (byte)tempC;
+                        tempC = (int)cast;
                         try {
                             bufferedWriter.write(tempC);
                         }catch (IOException e){
@@ -73,7 +79,8 @@ public class BitsAnalyze {
                     if(currentBits == 12) { /* jezeli liczba zajetych bitow wynosi dokladnie 12 */
                         temp = tempCode % 16; /* odcinamy 4 ostatnie bity i przechowujemy pod zmienna tymczasowa */
                     tempCode >>= 4;
-                        tempC = tempCode;
+                    byte cast = (byte)tempCode;
+                        tempC = (int)cast;
                         try {
                             bufferedWriter.write(tempC);
                         }catch (IOException e){
@@ -84,6 +91,8 @@ public class BitsAnalyze {
                     currentBits = 4;
                     } else { /* w przeciwnym wypadku wynosi 16, wiec robimy to samo co dla kompresji 16-bit */
                         tempC = tempCode / (1 << 8);
+                        cast = (byte)tempC;
+                        tempC = (int)cast;
                         try {
                             bufferedWriter.write(tempC);
                         }catch (IOException e){
@@ -92,6 +101,8 @@ public class BitsAnalyze {
                         }
                         if(!redundantZero) {
                             tempC = tempCode;
+                            cast = (byte)tempCode;
+                            tempC = (int)cast;
                             try {
                                 bufferedWriter.write(tempC);
                             }catch (IOException e){
@@ -121,7 +132,7 @@ public class BitsAnalyze {
         }
         return false;
     }
-    public static int analyzeBits(File output, int c, flag_t f, mod_t mode, buffer_t buf, buffer_t codeBuf, int currentBits, int tempCode, HashMap<String, Integer> listCodes){
+    public static int analyzeBits(File output, int c, flag_t f, mod_t mode, buffer_t buf, buffer_t codeBuf, HashMap<String, Integer> listCodes){
         int i;
         int bits = 0; /* ilosc przeanalizowanych bitow */
         int currentCode; /* obecny kod przejscia w sciezce */
@@ -182,7 +193,7 @@ public class BitsAnalyze {
                     buf.buf[(buf.pos)++] = (char)(returnBit(c, bits)+'0');
                     buf.buf[buf.pos] = (char)('\0');
                     bits++;
-                    if(compareBuffer(listCodes, cutString(String.valueOf(buf.buf)), output, f.compLevel, ((((bits == 8 ? 1:0) - f.redundantBits)==1?true:false) ? f.redundantZero : false), currentBits, tempCode))
+                    if(compareBuffer(listCodes, cutString(String.valueOf(buf.buf)), output, f.compLevel, (((bits == 8 ? 1:0) - f.redundantBits)==1?true:false) ? f.redundantZero : false))
                         buf.pos = 0;
                     break;
                 }
