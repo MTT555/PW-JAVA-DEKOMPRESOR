@@ -21,6 +21,11 @@ public class BitsAnalyze {
         }
         return string;
     }
+    //ten kod zamienia ujemną wartość 8 bitową na odpowiadającą jej wartość 8 bitową ale bez znaku
+    //bez tej funkcji poniżej nie działa dekompresja 12 i 16 bitowa
+    public static int signedToUnsigned8bitvalue(int value){
+        return value & 0xFF; //11111111
+    }
     public static FileWriter fileWriter;
     public static int down = 0; //wartość znajdująca się na gałęzi drzewa
     //przejście w lewo reprezentuje 0, w prawo 1
@@ -55,17 +60,15 @@ public class BitsAnalyze {
                 else if(compLevel == 16) { /* dla kompresji 16-bit */
                     tempC = set.getValue()/(1<<8);
                     try {/* piszemy 2 symbole */
-                        bufferedWriter.write(tempC);
+                        bufferedWriter.write(signedToUnsigned8bitvalue(tempC));
                     }catch (IOException e){
                         System.err.println("Output file error!\n");
                         System.exit(3);
                     }
                     if(!redundantZero) { /* chyba ze oznaczenie o nadmiarowym znaku '\0' ustawione na true */
                         tempC = set.getValue();
-                        byte cast = (byte)tempC;
-                        tempC = (int)cast;
                         try {
-                            bufferedWriter.write(tempC);
+                            bufferedWriter.write(signedToUnsigned8bitvalue(tempC));
                         }catch (IOException e){
                             System.err.println("Output file error!\n");
                             System.exit(3);
@@ -82,7 +85,7 @@ public class BitsAnalyze {
                     byte cast = (byte)tempCode;
                         tempC = (int)cast;
                         try {
-                            bufferedWriter.write(tempC);
+                            bufferedWriter.write(signedToUnsigned8bitvalue(tempC));
                         }catch (IOException e){
                             System.err.println("Output file error!\n");
                             System.exit(3);
@@ -94,7 +97,7 @@ public class BitsAnalyze {
                         cast = (byte)tempC;
                         tempC = (int)cast;
                         try {
-                            bufferedWriter.write(tempC);
+                            bufferedWriter.write(signedToUnsigned8bitvalue(tempC));
                         }catch (IOException e){
                             System.err.println("Output file error!\n");
                             System.exit(3);
@@ -104,7 +107,7 @@ public class BitsAnalyze {
                             cast = (byte)tempCode;
                             tempC = (int)cast;
                             try {
-                                bufferedWriter.write(tempC);
+                                bufferedWriter.write(signedToUnsigned8bitvalue(tempC));
                             }catch (IOException e){
                                 System.err.println("Output file error!\n");
                                 System.exit(3);
