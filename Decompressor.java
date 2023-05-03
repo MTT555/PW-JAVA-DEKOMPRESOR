@@ -22,6 +22,8 @@ public class Decompressor {
     public FileReader inputReader;
     public BufferedReader read;
     public int decompress(File input, File output, Settings settings)  {
+        //dajemy poczatkowe dane do pliku tymczasowego
+        sendDataToGUI.insertDataToFile("0 0 0");
         buf.buf = new char[64]; //tymczasowy bufor przechowujący po 8 wczytanych bitów
         codeBuf.buf = new char[64]; //tymczasowy bufor przechowujący aktualnie wczytany kod Huffmana
         Arrays.fill(codeBuf.buf,'x');
@@ -46,7 +48,7 @@ public class Decompressor {
             System.exit(2);
         }
         allFlag.compLevel = ((c & 192) >> 6 != 0) ? 4 * (((c & 192) >> 6) + 1) : 0; /* odczytanie poziomu kompresji (192 == 0b11000000) */
-        allFlag.cipher = ((c & 32) == 1) ? true : false; /* odczytanie szyfrowania (32 == 0b00100000) */
+        allFlag.cipher = ((c & 32) != 0) ? true : false; /* odczytanie szyfrowania (32 == 0b00100000) */
         allFlag.redundantZero = ((c & 16) == 1) ? true : false; /* sprawdzenie, czy konieczne bedzie odlaczenie nadmiarowego koncowego znaku '\0' (16 == 0b00010000) */
         allFlag.redundantBits = c & 7; /* odczytanie ilosci nadmiarowych bitow konczacych (7 == 0b00000111) */
         defFlag.compLevel = allFlag.compLevel; /* ustawienie odpowiednich wartosci flagi domyslnej */
@@ -59,7 +61,7 @@ public class Decompressor {
             Decrypt.decryptFile(input, output, cipherKey);
             return 0;
         }
-        int actualIndex = 4; //iterujemy po każdym bajcie w pliku, zaczynamy od piątego bajtu(od słownika)
+        long actualIndex = 4; //iterujemy po każdym bajcie w pliku, zaczynamy od piątego bajtu(od słownika)
         /*Analiza pliku*/
         try {
             read.skip(1); //pomijamy bajt z sumą kontrolną
@@ -71,7 +73,7 @@ public class Decompressor {
                     cipherPos++;
                 }
                 /* analizowanie kazdego bitu przy pomocy funkcji */
-                anBitsVal = BitsAnalyze.analyzeBits(output, c, defFlag, mode, buf, codeBuf, listCodes);
+                anBitsVal = BitsAnalyze.analyzeBits(output, c, defFlag, mode, buf, codeBuf, listCodes,actualIndex,input);
                 if (anBitsVal == 1) return 1;
                 if (anBitsVal == 2) {
                     System.err.println("Decompression failure due to the incorrect cipher!\nCipher provided during the decompression has to be the exact same as the one provided during the compression to receive an accurate output!\n");
@@ -85,12 +87,13 @@ public class Decompressor {
             System.exit(2);
         }
         //to polecenie poniżej wykona się tylko dla ostatniego bajtu
-        anBitsVal = BitsAnalyze.analyzeBits(output,c,allFlag,mode,buf,codeBuf,listCodes);
+        anBitsVal = BitsAnalyze.analyzeBits(output,c,allFlag,mode,buf,codeBuf,listCodes,actualIndex,input);
         if(anBitsVal == 1)return 1;
         if(anBitsVal == 2){
             System.err.println("Decompression failure due to the incorrect cipher!\nCipher provided during the decompression has to be the exact same as the one provided during the compression to receive an accurate output!\n");
             return 2;
         }
+        sendDataToGUI.insertDataToFile("3 0 0");//dekompresja zakończona
         System.err.println("File successfully decompressed!\n");
 
         return 0;

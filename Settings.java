@@ -12,6 +12,6 @@ public class Settings {
     public boolean cipher = false;
 
     //klucz szyfrowania(w użyciu, jeżeli plik został zaszyfrowany)
-    public String cipherKey = "Politechnika Warszawska";
+    public String cipherKey = "Politechnika_Warszawska";
 
 }

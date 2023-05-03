@@ -135,7 +135,7 @@ public class BitsAnalyze {
         }
         return false;
     }
-    public static int analyzeBits(File output, int c, flag_t f, mod_t mode, buffer_t buf, buffer_t codeBuf, HashMap<String, Integer> listCodes){
+    public static int analyzeBits(File output, int c, flag_t f, mod_t mode, buffer_t buf, buffer_t codeBuf, HashMap<String, Integer> listCodes,long actualIndex,File input){
         int i;
         int bits = 0; /* ilosc przeanalizowanych bitow */
         int currentCode; /* obecny kod przejscia w sciezce */
@@ -185,6 +185,7 @@ public class BitsAnalyze {
                             result += (buf.buf[i]-'0');
                         }
                         Utils.addToListCodes(listCodes, result, cutString(String.valueOf(codeBuf.buf)));
+                        sendDataToGUI.insertDataToFile("1 " + listCodes.size() + " 0");
                         buf.pos = 0;
                         Decompressor.tree =  Decompressor.tree.prev;
                         (codeBuf.pos)--;
@@ -193,6 +194,7 @@ public class BitsAnalyze {
                     break;
                 }
                 case 3: {
+                    sendDataToGUI.insertDataToFile("2 " + actualIndex + " " + input.length());
                     buf.buf[(buf.pos)++] = (char)(returnBit(c, bits)+'0');
                     buf.buf[buf.pos] = (char)('\0');
                     bits++;

@@ -28,6 +28,7 @@ public static void main(String [] args){
     //Sprawdzamy czy podano zarówno plik wejściowy jak i wyjściowy
     if(args.length < 2) {
         System.err.println("Too few arguments!");
+        sendDataToGUI.insertDataToFile("4 0 0");
         System.exit(1);
     }
     input = new File(args[0]);
@@ -45,12 +46,14 @@ public static void main(String [] args){
     //czy plik wejściowy da się odczytać/czy istnieje
     if (!input.canRead() && !input.exists()){
         System.err.println("Input file could not be opened!\n" + args[0]);
+        sendDataToGUI.insertDataToFile("5 0 0");
         System.exit(2);
     }
 
     //czy plik nie jest pusty
     if(input.length()==0){
         System.err.println("Input file is empty!\n" + args[1]);
+        sendDataToGUI.insertDataToFile("6 0 0");
         System.exit(4);
     }
 
@@ -86,6 +89,7 @@ public static void main(String [] args){
                 System.exit(6);
             } else if (decompVal == 2){
                 System.err.println("Decompression encryption failure!\n");
+                sendDataToGUI.insertDataToFile("7 0 0");
                 System.exit(7);
             } else {
                 System.exit(5);

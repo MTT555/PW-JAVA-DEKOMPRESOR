@@ -60,6 +60,7 @@ public class Utils {
     if(xor == xorCorrectValue)return 0;
     else {
         System.err.println("Provided file cannot be decompressed since it is corrupted!\n");
+        sendDataToGUI.insertDataToFile("8 0 0");
        return 3; // plik jest uszkodzony
     }
     }
