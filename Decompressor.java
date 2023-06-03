@@ -74,6 +74,7 @@ public class Decompressor extends FileManager {
                 if (allFlag.cipher) {
                     c -= cipherKey.charAt(cipherPos % cipherLength); /* odszyfrowanie */
                     cipherPos++;
+                    c = BitsAnalyze.signedToUnsigned8bitvalue(c); //aby uniknąć ujemnych kodów znaku
                 }
                 /* analizowanie kazdego bitu przy pomocy funkcji */
                 anBitsVal = BitsAnalyze.analyzeBits(output, c, defFlag, mode, buf, codeBuf, listCodes,actualIndex,input);
