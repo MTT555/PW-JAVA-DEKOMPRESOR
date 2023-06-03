@@ -5,7 +5,7 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class Decompressor {
+public class Decompressor extends FileManager {
     public String cipherKey; //klucz szyfrowania
     public int cipherPos = 0;
     public int cipherLength; //długość szyfru
@@ -19,9 +19,22 @@ public class Decompressor {
     public HashMap<String,Integer>listCodes = new HashMap<String, Integer>(); // tu przechowujemy znaki i odpowiadający mu kod Huffmana
     public mod_t mode = new mod_t(1);//obiekt przechowujący aktualny tryb odczytywania danych z pliku
     public int c;//zmienna pomocnicza do wczytywania po 8 bitów z pliku
-    public FileReader inputReader;
-    public BufferedReader read;
+    File input_1;
+    public void prepareFile(){
+        try {
+            //w poniższym kostruktorze dajemy informację o zmianie sposobu kodowania
+            //jest to konieczne aby ujemne wartości znaków były wczytywane poprawnie
+            inputReader = new FileReader(input_1, Charset.forName("ISO-8859-1"));
+            inputBufferedReader = new BufferedReader(inputReader);
+            inputBufferedReader.skip(2);
+            c = inputBufferedReader.read();
+        }catch(IOException e){
+            System.out.println("Input file error!\n"+input.getName());
+            System.exit(2);
+        }
+    }
     public int decompress(File input, File output, Settings settings)  {
+        input_1 = input;
         //dajemy poczatkowe dane do pliku tymczasowego
         sendDataToGUI.insertDataToFile("0 0 0");
         buf.buf = new char[64]; //tymczasowy bufor przechowujący po 8 wczytanych bitów
@@ -36,17 +49,7 @@ public class Decompressor {
         codeBuf.pos = 0; /* aktualna pozycja w buforze dla kodow */
 
         //odczytujemy flagi - ustawiamy kursor na trzeci znak zawierający flagi
-        try {
-            //w poniższym kostruktorze dajemy informację o zmianie sposobu kodowania
-            //jest to konieczne aby ujemne wartości znaków były wczytywane poprawnie
-            inputReader = new FileReader(input, Charset.forName("ISO-8859-1"));
-            read = new BufferedReader(inputReader);
-            read.skip(2);
-            c = read.read();
-        }catch(IOException e){
-            System.out.println("Input file error!\n"+input.getName());
-            System.exit(2);
-        }
+        prepareFile();
         allFlag.compLevel = ((c & 192) >> 6 != 0) ? 4 * (((c & 192) >> 6) + 1) : 0; /* odczytanie poziomu kompresji (192 == 0b11000000) */
         allFlag.cipher = ((c & 32) != 0) ? true : false; /* odczytanie szyfrowania (32 == 0b00100000) */
         allFlag.redundantZero = ((c & 16) == 1) ? true : false; /* sprawdzenie, czy konieczne bedzie odlaczenie nadmiarowego koncowego znaku '\0' (16 == 0b00010000) */
@@ -64,8 +67,8 @@ public class Decompressor {
         long actualIndex = 4; //iterujemy po każdym bajcie w pliku, zaczynamy od piątego bajtu(od słownika)
         /*Analiza pliku*/
         try {
-            read.skip(1); //pomijamy bajt z sumą kontrolną
-            while ((c = read.read()) != -1) {
+            inputBufferedReader.skip(1); //pomijamy bajt z sumą kontrolną
+            while ((c = inputBufferedReader.read()) != -1) {
                 if (actualIndex == input.length() - 1)
                     break; //przerywamy pętlę jeżeli znajdziemy się na ostatnim bajcie
                 if (allFlag.cipher) {

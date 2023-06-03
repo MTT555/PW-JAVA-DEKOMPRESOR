@@ -4,8 +4,17 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 
-public class Utils {
+public class Utils extends FileManager {
     //dodawanie kodu wraz ze znakiem do hashmapy
+    File input_1; //zmienna pomocnicza w celu usunięcia błędu
+    public void prepareFile(){
+        try {
+            inputReader = new FileReader(input_1, Charset.forName("ISO-8859-1"));
+            inputBufferedReader = new BufferedReader(inputReader);
+        }catch (IOException e){
+            System.out.println("Output file error!");
+        }
+    }
     public static void addToListCodes(HashMap<String,Integer>listCodes,int character, String code){
         listCodes.put(code,character);
     }
@@ -38,10 +47,10 @@ public class Utils {
         System.out.println("------------------------------------------------------------------------------------------------\n\n");
     }
     //sprawdzamy czy plik skompresowany jest poprawny
-    public static int fileIsGood(File input, char xorCorrectValue, boolean displayMsg) throws IOException {
-        FileReader fileReader = new FileReader(input, Charset.forName("ISO-8859-1"));
-        BufferedReader inputBufferedReader = new BufferedReader(fileReader);
-        if(input.length() < 4) return 4; // czy plik jest pusty (długość w bajtach jest mniejsza niż nagłówek)
+    public int fileIsGood(File input, char xorCorrectValue, boolean displayMsg) throws IOException {
+        input_1 = input;
+        prepareFile();
+    if(input.length() < 4) return 4; // czy plik jest pusty (długość w bajtach jest mniejsza niż nagłówek)
     //Sprawdzamy czy nagłówek jest prawidłowy
     //dwa pierwsze bajty to powinno być CT
     if (inputBufferedReader.read() != 'C')return 1;
