@@ -33,6 +33,10 @@ public class DekompresorGUI extends Application {
         stage.setOnCloseRequest((WindowEvent we) -> {
             try {
                 process.destroy();
+            } catch (NullPointerException e) {
+                System.exit(0);
+            }
+            try {
                 FileWriter writer = new FileWriter("data");
                 writer.write("");
                 writer.close();
@@ -126,9 +130,7 @@ public class DekompresorGUI extends Application {
             }
         });
         //wybrane wymuszanie dekompresji
-        rb1.setOnAction(value ->  {
-        forceDecompression = true;
-        });
+        rb1.setOnAction(value -> forceDecompression = true);
         //wybrane szyfrowanie
         rb2.setOnAction(value ->  {
         isCipherActivated = true;
@@ -141,13 +143,13 @@ public class DekompresorGUI extends Application {
             progressBar.setProgress(0);
             //Tworzymy i wywołujemy polecenie uruchamiające kompresor zapisany w pliku Dekompresor.jar
             if (!forceDecompression && !isCipherActivated) {
-                arguments = "java -jar Dekompresor.jar " + filePath + " " + input.getText();
+                arguments = "java -jar \"D:\\Jezyki i metody programowania - Java\\HuffmanDecompressor\\Dekompresor-GUI\\Dekompresor.jar\" \"" + filePath + "\" " + input.getText();
             }
-            else if (!forceDecompression && isCipherActivated){
-                arguments = "java -jar Dekompresor.jar " + filePath + " " + input.getText() + " -c " + cipher.getText();
+            else if (isCipherActivated){
+                arguments = "java -jar \"D:\\Jezyki i metody programowania - Java\\HuffmanDecompressor\\Dekompresor-GUI\\Dekompresor.jar\" \"" + filePath + "\" " + input.getText() + " -c " + cipher.getText();
             }
             else{
-                arguments = "java -jar Dekompresor.jar " + filePath + " " + input.getText() + " -d";
+                arguments = "java -jar \"D:\\Jezyki i metody programowania - Java\\HuffmanDecompressor\\Dekompresor-GUI\\Dekompresor.jar\" \"" + filePath + "\" " + input.getText() + " -d";
             }
             try{
                 System.err.println(arguments);
@@ -157,42 +159,55 @@ public class DekompresorGUI extends Application {
                 System.err.println("error");
             }
             File data = new File("data");
+            File tree = new File("tree");
+            System.err.println(tree.getAbsolutePath());
             try {
                 scanner = new Scanner(data);
-            }catch (IOException e){
+            } catch (IOException e){
                 System.err.println("File data error");
             }
 
             //sprawdzanie danych od dekompresora dajemy w innym wątku
             //dane od dekompresora zapisywane są w pliku data
             if(process.isAlive()){
-                Task<Void> task = new Task<Void>() {
+                Task<Void> task = new Task<>() {
                     @Override
-                    protected Void call() throws Exception {
+                    protected Void call() {
                         AnalyzeDataFromDecompressor analyzeData = new AnalyzeDataFromDecompressor();
                         // tutaj umieszczamy kod wykonywany w innym wątku niż wątek JavaFX
                         File check = new File(DekompresorGUI.filePath);
-                        while(analyzeData.val1 != 3 && analyzeData.val1 != -1) {
+                        while (analyzeData.val1 != 3 && analyzeData.val1 != -1) {
                             updateLabel(analyzeData.run(check.length()));
-                            setProgressBar(analyzeData.val1,analyzeData.val2,analyzeData.val3,check.length());
+                            setProgressBar(analyzeData.val1, analyzeData.val2, analyzeData.val3, check.length());
                         }
-                       return null;
+                        return null;
                     }
 
                     private void updateLabel(String text) {
                         //Zmieniamy komunikat tekstowy w zależności od zachowania dekompresora
                         Platform.runLater(() -> {
                             info1.setText(text);
+                            // jeżeli dekompresja się powiodła, to wizualizujemy drzewo
+                            if (text.equals("Dekompresja ukończona.")) {
+                                try {
+                                    DictTree dictTree = new DictTree(tree);
+                                    dictTree.start(new Stage());
+                                } catch (Exception e) {
+                                    System.err.println("Tree generation error!");
+                                    e.printStackTrace();
+                                }
+                            }
                         });
                     }
+
                     private void setProgressBar(long val1, long val2, long val3, long check) {
                         //Ustawiamy pasek postępu w zależności od postępu dekompresora
                         Platform.runLater(() -> {
-                            if (val1 == 2){
+                            if (val1 == 2) {
                                 if (check == val3)
-                                progressBar.setProgress((double)val2/val3);
+                                    progressBar.setProgress((double) val2 / val3);
                             }
-                            if (val1 == 3){
+                            if (val1 == 3) {
                                 progressBar.setProgress(1);
                             }
                         });
