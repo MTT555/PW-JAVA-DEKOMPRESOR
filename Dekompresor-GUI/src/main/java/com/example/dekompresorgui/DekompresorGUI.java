@@ -142,7 +142,7 @@ public class DekompresorGUI extends Application {
         decompress.setOnAction(value -> {
             String arguments;
             progressBar.setProgress(0);
-            String guiPath = "\"" + Paths.get("").toAbsolutePath().toString() + "\\Dekompresor-GUI\\Dekompresor.jar\"";
+            String guiPath = "\"" + Paths.get("").toAbsolutePath().toString() + "\\Dekompresor.jar\"";
             // Tworzymy i wywołujemy polecenie uruchamiające kompresor zapisany w pliku Dekompresor.jar
             if (!forceDecompression && !isCipherActivated) {
                 arguments = "java -jar " + guiPath + " \"" + filePath + "\" " + input.getText();
