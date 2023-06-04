@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class DekompresorGUI extends Application {
@@ -118,7 +119,7 @@ public class DekompresorGUI extends Application {
         root.getChildren().add(chooseFile);
 
         //Co się ma zdarzyć kiedy użytkownik wybierze plik wejściowy
-        chooseFile.setOnAction(value ->  {
+        chooseFile.setOnAction(value -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Wybierz plik do dekompresji");
             File selectedFile = fileChooser.showOpenDialog(stage);
@@ -126,50 +127,48 @@ public class DekompresorGUI extends Application {
             if (selectedFile != null) {
                 // Pobieranie ścieżki do wybranego pliku
                 filePath = selectedFile.getAbsolutePath();
-               showPath.setText("Ścieżka do pliku: " + filePath);
+                showPath.setText("Ścieżka do pliku: " + filePath);
             }
         });
         //wybrane wymuszanie dekompresji
         rb1.setOnAction(value -> forceDecompression = true);
         //wybrane szyfrowanie
-        rb2.setOnAction(value ->  {
-        isCipherActivated = true;
-        cipher.setEditable(true);
-        cipher.setStyle("");
+        rb2.setOnAction(value -> {
+            isCipherActivated = true;
+            cipher.setEditable(true);
+            cipher.setStyle("");
         });
         //klknięty przycisk dekompresji
-        decompress.setOnAction(value ->  {
+        decompress.setOnAction(value -> {
             String arguments;
             progressBar.setProgress(0);
-            //Tworzymy i wywołujemy polecenie uruchamiające kompresor zapisany w pliku Dekompresor.jar
+            String guiPath = "\"" + Paths.get("").toAbsolutePath().toString() + "\\Dekompresor-GUI\\Dekompresor.jar\"";
+            // Tworzymy i wywołujemy polecenie uruchamiające kompresor zapisany w pliku Dekompresor.jar
             if (!forceDecompression && !isCipherActivated) {
-                arguments = "java -jar \"D:\\Jezyki i metody programowania - Java\\HuffmanDecompressor\\Dekompresor-GUI\\Dekompresor.jar\" \"" + filePath + "\" " + input.getText();
+                arguments = "java -jar " + guiPath + " \"" + filePath + "\" " + input.getText();
+            } else if (isCipherActivated) {
+                arguments = "java -jar " + guiPath + " \"" + filePath + "\" " + input.getText() + " -c " + cipher.getText();
+            } else {
+                arguments = "java -jar " + guiPath + " \"" + filePath + "\" " + input.getText() + " -d";
             }
-            else if (isCipherActivated){
-                arguments = "java -jar \"D:\\Jezyki i metody programowania - Java\\HuffmanDecompressor\\Dekompresor-GUI\\Dekompresor.jar\" \"" + filePath + "\" " + input.getText() + " -c " + cipher.getText();
-            }
-            else{
-                arguments = "java -jar \"D:\\Jezyki i metody programowania - Java\\HuffmanDecompressor\\Dekompresor-GUI\\Dekompresor.jar\" \"" + filePath + "\" " + input.getText() + " -d";
-            }
-            try{
+            try {
                 System.err.println(arguments);
                 process = Runtime.getRuntime().exec(arguments);
 
-            }catch(IOException e){
+            } catch (IOException e) {
                 System.err.println("error");
             }
             File data = new File("data");
             File tree = new File("tree");
-            System.err.println(tree.getAbsolutePath());
             try {
                 scanner = new Scanner(data);
-            } catch (IOException e){
+            } catch (IOException e) {
                 System.err.println("File data error");
             }
 
             //sprawdzanie danych od dekompresora dajemy w innym wątku
             //dane od dekompresora zapisywane są w pliku data
-            if(process.isAlive()){
+            if (process.isAlive()) {
                 Task<Void> task = new Task<>() {
                     @Override
                     protected Void call() {

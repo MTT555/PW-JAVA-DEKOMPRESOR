@@ -198,7 +198,7 @@ public class BitsAnalyze {
                             result += (buf.buf[i] - '0');
                         }
                         Utils.addToListCodes(listCodes, result, cutString(String.valueOf(codeBuf.buf)));
-                        try {
+                        try { // mozna tak zrobić, bo drzewo jest generowane tylko przy dekompresji 8-bit
                             treeBufWriter.write(signedToUnsigned8bitvalue(result));
                         } catch (IOException e) {
                             System.err.println("Output file error!\n");

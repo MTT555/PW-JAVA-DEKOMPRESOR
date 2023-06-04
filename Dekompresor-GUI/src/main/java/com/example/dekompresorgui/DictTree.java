@@ -114,12 +114,17 @@ public class DictTree extends Application {
         int direction, recursionLevel = 1;
         double length = 25550 / Math.pow(2, recursionLevel);
         double offsetRectX = 0, offsetRectY = 0;
+        boolean skip = false;
         ArrayList<Character> buffer = new ArrayList<>();
         CTree ctree = new CTree("root", "", recursionLevel);
         StackPane rootNode = ctree.rect.get();
         root.getChildren().add(rootNode);
 
         for (int i = 1; i < list.size(); i++) {
+            if(skip) {
+                skip = false;
+                continue;
+            }
             StringBuilder word = new StringBuilder();
             if (list.get(i) - 48 == 0 || list.get(i) - 48 == 1) {
                 for (char j : buffer)
@@ -151,6 +156,8 @@ public class DictTree extends Application {
                 length = 25550 / Math.pow(2, recursionLevel);
                 buffer.remove(buffer.size() - 1);
             }
+            if(list.get(i) - 48 == 1)
+                skip = true;
             if (list.get(i) - 48 == 3) {
                 System.err.println("Tree generation successful!");
                 break;
