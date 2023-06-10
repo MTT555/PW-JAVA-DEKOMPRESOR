@@ -26,7 +26,7 @@
 \PassOptionsToPackage{hyphens}{url} % url is loaded by hyperref
 \usepackage[unicode=true]{hyperref}
 \hypersetup{
-            pdftitle={Specyfikacja funkcjonalna programu realizującego kompresję plików wykorzystującego algorytm Huffmana},
+            pdftitle={Specyfikacja funkcjonalna programu realizującego dekompresję plików skompresowanych algorytmem Huffmana},
             pdfauthor={Adrian Chmiel, Mateusz Tyl},
             pdfborder={0 0 0},
             breaklinks=true}
@@ -57,7 +57,7 @@
 \makeatother
 
 
-\title{Specyfikacja funkcjonalna programu realizującego kompresję plików wykorzystującego algorytm Huffmana}
+\title{Specyfikacja funkcjonalna programu realizującego dekompresję plików skompresowanych algorytmem Huffmana}
 \author{Autorzy: Adrian Chmiel, Mateusz Tyl}
 \date{10.06.2023}
 
@@ -73,7 +73,11 @@ Historia zmian dokumentu:\\
   \hline 
   Autor: & Data: & Opis zmiany:& Wersja dokumentu \\
   \hline
-  Adrian Chmiel & 10.06.2023 & Dodanie pierwszego szkicu & 1.0 \\
+  Adrian Chmiel & 10.06.2023 & Pierwsza wersja dokumentu & 1.0 \\
+  \hline
+  Adrian Chmiel & 10.06.2023 & Drobne poprawki & 1.1 \\
+  \hline
+  Adrian Chmiel & 10.06.2023 & Finalna wersja dokumentu & 2.0 \\
   \hline
 \end{tabular} 
 \section{Cel projektu}\label{header-n231}
@@ -112,7 +116,8 @@ Zapis słownika dzięki któremu można dokonać późniejszej dekompresji
 Skompresowany zapis pliku
 \end{itemize}
 Na podstawie tych informacji możemy wywnioskować, że w dużym skrócie poprawna dekompresja pliku będzie przebiegać w sposób następujący:
-\begin{numerize}
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
 \item 
 1. Weryfikacja poprawności pliku na podstawie informacji z nagłówka
 \item
@@ -121,7 +126,7 @@ Na podstawie tych informacji możemy wywnioskować, że w dużym skrócie popraw
 3. Porównywanie kodów napotkanych przy analizie pliku z tymi, które znajdują się w słowniku
 \item 
 4. Zapisywanie do pliku wyjściowego odpowiedniego symbolu, jeżeli kody się pokryją
-\end{numerize}
+\end{enumerate}
 \section{Dane wejściowe}\label{header-n233}
 Program wymaga przekazania dowolnego pliku, który pochodzi z kompresora w języku C napisanego przez nas w ramach poprzedniego projektu. W przypadku podania innego pliku dekompresja się nie powiedzie, a program zwróci jeden z kodów błędu.
 \section{Uruchamianie programu}\label{header-n256}
@@ -129,7 +134,7 @@ Program wymaga przekazania dowolnego pliku, który pochodzi z kompresora w języ
 Program może być uruchomiony w jednym z dwóch trybów:
 \begin{itemize}
 \item
-    \texttt{wsadowy} - jedynym wymaganym parametrem jest nazwa pliku, który chcemy zdekompresować
+    \texttt{wsadowy} - wymagane są dwa parametry tj. nazwa pliku, który chcemy zdekompresować oraz nazwa pliku wyjściowego 
     \\Lista parametrów opcjonalnych:
 
     \begin{itemize}
@@ -147,7 +152,7 @@ Program może być uruchomiony w jednym z dwóch trybów:
 \textbf{Uwaga!} Przy uruchamianiu dekompresora w trybie wsadowym wizualizacja słownika nie zostanie wyświetlona.
 
 \section{Uruchamianie programu przez IntelliJ IDEA}\label{header-n256}
-Niezwykle pomocnym narzędziem przy realizacji tego projektu był definitywnie IntelliJ IDEA od JetBrains dostępny za darmo w ramach licencji studenckiej. W celu uruchomienia tego programu bez przeszkód w tym środowisku, po pobraniu całego projektu najlepiej będzie najpierw ustawić katalog Dekompresor-GUI\textbackslash src\textbackslash main\textbackslash java jako Source Root, a następnie katalog główny jako kolejny Source Root. Następnie możemy sobie przygotować dwie konfiguracje takie jak widoczne na poniższych zrzutach ekranu:
+Niezwykle pomocnym narzędziem przy realizacji tego projektu był definitywnie IntelliJ IDEA od JetBrains, który jest dostępny za darmo. W celu uruchomienia dekompresora w tym środowisku programistycznym bez przeszkód, po pobraniu całego projektu najlepiej będzie najpierw ustawić katalog Dekompresor-GUI\textbackslash src\textbackslash main\textbackslash java jako Source Root, a następnie katalog główny zawierający całość projektu jako kolejny Source Root. Po wykonaniu tych ustawień możemy sobie przygotować dwie konfiguracje takie jak widoczne na poniższych zrzutach ekranu:
 \begin{itemize}
 \item
 tryb graficzny\\\\
@@ -315,6 +320,6 @@ Program po zakończeniu pracy zwraca wartość typu całkowitego, która może b
 \item
 6 - Podano nieprawidłowy szyfr przy dekompresji
 \end{itemize}
-Należy jednak pamiętać, że podanie nieprawidłowego szyfru może się również zakończyć powodzeniem, lecz uzyskany plik wynikowy nie będzie zgodny z oryginałem tj. plikiem przed kompresją.
+Należy jednak pamiętać, że podanie nieprawidłowego szyfru może się również zakończyć powodzeniem, lecz uzyskany plik wynikowy nie będzie zgodny z oryginałem tj. plikiem przed kompresją (wizualizacja słownika również nie ukaże drzewa, które jest prawidłowe dla danego pliku).
 
 \end{document}

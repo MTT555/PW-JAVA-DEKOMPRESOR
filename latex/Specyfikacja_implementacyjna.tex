@@ -1,5 +1,6 @@
 \documentclass[]{article}
 \usepackage{lmodern}
+\usepackage{graphicx}
 \usepackage{amssymb,amsmath}
 \usepackage{ifxetex,ifluatex}
 \usepackage{fixltx2e} % provides \textsubscript
@@ -25,7 +26,7 @@
 \PassOptionsToPackage{hyphens}{url} % url is loaded by hyperref
 \usepackage[unicode=true]{hyperref}
 \hypersetup{
-            pdftitle={Specyfikacja implementacyjna programu realizującego kompresję plików tekstowych wykorzystującego algorytm Huffmana},
+            pdftitle={Specyfikacja implementacyjna programu realizującego dekompresję plików skompresowanych algorytmem Huffmana},
             pdfauthor={Adrian Chmiel, Mateusz Tyl},
             pdfborder={0 0 0},
             breaklinks=true}
@@ -56,9 +57,9 @@
 \makeatother
 
 
-\title{Specyfikacja implementacyjna programu realizującego kompresję plików wykorzystującego algorytm Huffmana}
+\title{Specyfikacja implementacyjna programu realizującego dekompresję plików skompresowanych algorytmem Huffmana}
 \author{Autorzy: Adrian Chmiel, Mateusz Tyl}
-\date{08.04.2023}
+\date{10.06.2023}
 
 
 
@@ -72,14 +73,20 @@ Historia zmian dokumentu:\\
   \hline 
   Autor: & Data: & Opis zmiany:& Wersja dokumentu \\
   \hline
-  Adrian Chmiel & 10.06.2023 & Dodanie pierwszego szkicu & 1.0 \\
+  Adrian Chmiel & 10.06.2023 & Pierwsza wersja dokumentu & 1.0 \\
+  \hline
+  Adrian Chmiel & 10.06.2023 & Drobne poprawki & 1.1 \\
+  \hline
+  Adrian Chmiel & 10.06.2023 & Dodanie schematów klas & 2.0 \\
+  \hline
+  Adrian Chmiel & 11.06.2023 & Finalna wersja dokumentu & 3.0 \\
 \hline
 \end{tabular} 
 \section{Cel dokumentu}\label{header-n231}
 
 Celem tego dokumentu jest przedstawienie informacji o sposobie działania programu od strony technicznej poprzez analizę każdego pliku z osobna oraz przedstawienie związków między nimi.
 \section{Informacje ogólne}\label{header-n231}
-Program realizuje dekompresję plików pochodzących z kompresora przygotowanego w ramach poprzedniego projektu. Został on w całości napisany w języku Java. Dla prawidłowego działania wszystkich komponentów programu zalecane jest korzystanie z wersji języka Java 18 oraz wersji JDK 20.\\
+Program realizuje dekompresję plików pochodzących z kompresora przygotowanego w ramach poprzedniego projektu. Został on w całości napisany w języku Java. Dla prawidłowego działania wszystkich komponentów programu zalecane jest korzystanie z wersji JDK 20 lub wyższej.\\
 Program jest przystosowany do pracy i kompilacji zarówno na systemach Unixowych, jak i systemie Microsoft Windows. Do dyspozycji programisty przygotowano szeroki zakres testów różnej złożoności do wykonania..
 
 \section{Omówienie kodu źródłowego}\label{header-n231}
@@ -144,4 +151,9 @@ tree -> plik pomocniczy przechowujący informacje o tym, jak tworzyć drzewo
 
 System tworzenia drzewa jest bardzo podobny do systemu zapisu słownika wyjaśnionego w specyfikacji funkcjonalnej, lecz zamiast pojedynczych bitów 00, 01, 10, 11 odpowiednio zapisuję pojedyncze bajty znakami '0', '1', '2', '3'. Sama wizualizacja jest wyświetlania jedynie dla plików skompresowanych 8-bitowo, a więc informacje zawarte w samym pliku \textit{tree} są akuratne również tylko i wyłącznie dla takiej kompresji.
 
+\section{Schemat klas dekompresora}\label{header-n231}
+\includegraphics[width=\textwidth]{classes1.png}
+
+\section{Schemat klas odpowiadających za część graficzną}\label{header-n231}
+\includegraphics[width=\textwidth]{classes2.png}
 \end{document}
