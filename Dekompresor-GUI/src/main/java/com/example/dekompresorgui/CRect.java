@@ -28,8 +28,8 @@ public class CRect implements CObject {
 
     public StackPane get() {
         Text codeText = new Text('(' + code + ')');
-        codeText.setTranslateY(- 0.6 * rect.getHeight());
-        double fontSize = 250 / (1 + level / 1.5);
+        codeText.setTranslateY(- 0.65 * rect.getHeight());
+        double fontSize = 600 / (3 + level / 1.5);
         codeText.setFont(Font.font("Arial", fontSize / 5));
         codeText.setFill(Color.DARKMAGENTA);
         codeText.toFront();

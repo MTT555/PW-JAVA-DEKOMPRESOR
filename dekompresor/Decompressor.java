@@ -89,10 +89,9 @@ public class Decompressor extends FileManager {
                 }
                 // analizowanie kazdego bitu przy pomocy funkcji
                 anBitsVal = BitsAnalyze.analyzeBits(output, c, defFlag, mode, buf, codeBuf, listCodes, actualIndex, input);
-                if (anBitsVal == 1) return 1;
-                if (anBitsVal == 2) {
+                if (anBitsVal == -1) {
                     System.err.println("Decompression failure due to the incorrect cipher!\nCipher provided during the decompression has to be the exact same as the one provided during the compression to receive an accurate output!\n");
-                    return 2;
+                    return -1;
                 }
                 actualIndex++;
             }
@@ -102,11 +101,9 @@ public class Decompressor extends FileManager {
         }
         // to polecenie poniżej wykona się tylko dla ostatniego bajtu
         anBitsVal = BitsAnalyze.analyzeBits(output, c, allFlag, mode, buf, codeBuf, listCodes, actualIndex, input);
-        if (anBitsVal == 1)
-            return 1;
-        if (anBitsVal == 2) {
+        if (anBitsVal == -1) {
             System.err.println("Decompression failure due to the incorrect cipher!\nCipher provided during the decompression has to be the exact same as the one provided during the compression to receive an accurate output!\n");
-            return 2;
+            return -1;
         }
         SendDataToGUI.insertDataToFile("3 0 0"); // dekompresja zakończona
         System.err.println("File successfully decompressed!\n");

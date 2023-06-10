@@ -151,7 +151,7 @@ public class BitsAnalyze {
 
         while (bits != 8 - f.redundantBits) { /* f.redundantBits bedzie != 0 jedynie przy ostatnim analizowanym znaku */
             if (buf.pos > 100000 || codeBuf.pos > 100000) /* zapobieganie przepelnianiu pamieci w momencie podania zlego szyfru do odszyfrowania */
-                return 2;
+                return -1;
             switch (mode.value) {
                 case 1 -> { // dictRoad
                     currentCode = 2 * returnBit(c, bits) + returnBit(c, bits + 1);
@@ -164,9 +164,6 @@ public class BitsAnalyze {
                         (codeBuf.pos)--; /* wyjscie o jeden w gore */
                     } else if (currentCode == 1) {
                         Decompressor.tree = DNode.goDown(Decompressor.tree);
-                        if (down == -1)
-                            return 1;
-
                         //przejście o jeden w dół
                         //ten kod poniżej to umieszczanie w stringu podanego znaku na podanej pozycji
                         codeBuf.buf[codeBuf.pos] = (char) ('0' + down);
@@ -175,8 +172,6 @@ public class BitsAnalyze {
                         mode.value = 2;
                     } else if (currentCode == 0) {
                         Decompressor.tree = DNode.goDown(Decompressor.tree);
-                        if (down == -1)
-                            return 1;
                         codeBuf.buf[codeBuf.pos] = (char) ('0' + down);
                         codeBuf.pos++;
                     }

@@ -142,14 +142,15 @@ public class DekompresorGUI extends Application {
         decompress.setOnAction(value -> {
             String arguments;
             progressBar.setProgress(0);
-            String guiPath = "\"" + Paths.get("").toAbsolutePath().toString() + "\\Dekompresor.jar\"";
+            String guiPath = "\"" + Paths.get("").toAbsolutePath() + "\\Dekompresor.jar\"";
+            String outPath = input.getText().isEmpty() ? "output" : input.getText();
             // Tworzymy i wywołujemy polecenie uruchamiające kompresor zapisany w pliku Dekompresor.jar
             if (!forceDecompression && !isCipherActivated) {
-                arguments = "java -jar " + guiPath + " \"" + filePath + "\" " + input.getText();
+                arguments = "java -jar " + guiPath + " \"" + filePath + "\" " + outPath;
             } else if (isCipherActivated) {
-                arguments = "java -jar " + guiPath + " \"" + filePath + "\" " + input.getText() + " -c " + cipher.getText();
+                arguments = "java -jar " + guiPath + " \"" + filePath + "\" " + outPath + " -c " + cipher.getText();
             } else {
-                arguments = "java -jar " + guiPath + " \"" + filePath + "\" " + input.getText() + " -d";
+                arguments = "java -jar " + guiPath + " \"" + filePath + "\" " + outPath + " -d";
             }
             try {
                 System.err.println(arguments);

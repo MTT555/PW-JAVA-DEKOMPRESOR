@@ -43,13 +43,15 @@ public class Controller extends FileManager {
         //Analiza argumentów podanych przy wywołaniu programu
         //jeżeli nie podano żadnego argumentu lub podano tylko argument -h program wyświetli pomoc
         if (args.length == 0 || args[1].equals("-h")) Utils.showHelpMessage();
-        prepareFile();
+
         //Sprawdzamy czy podano zarówno plik wejściowy jak i wyjściowy
         if (args.length < 2) {
             System.err.println("Too few arguments!");
             SendDataToGUI.insertDataToFile("4 0 0");
             System.exit(1);
         }
+        prepareFile();
+
         //sprawdzamy pozostałe argumenty
         for (int i = 2; i < args.length; i++) {
             if (args[i].equals("-d")) { //ustawiono wymuszenie dekompresji
@@ -80,16 +82,12 @@ public class Controller extends FileManager {
             }
             if (fileCheck == 0) {
                 decompVal = decompress.decompress(input, output, settings);
-                if (decompVal == 1) {
-                    System.err.println("Decompression memory failure!\n");
-                    System.exit(6);
-                } else if (decompVal == 2) {
-                    System.err.println("Decompression encryption failure!\n");
-                    SendDataToGUI.insertDataToFile("7 0 0");
-                    System.exit(7);
-                } else {
-                    System.exit(5);
-                }
+            } else if (decompVal == -1) {
+                System.err.println("Decompression encryption failure!\n");
+                SendDataToGUI.insertDataToFile("7 0 0");
+                System.exit(6);
+            } else {
+                System.exit(5);
             }
         }
     }
